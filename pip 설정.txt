@@ -1,1 +1,0 @@
-https://stackoverflow.com/questions/54915381/will-pip-work-for-python-2-7-after-its-end-of-life-on-1st-jan-2020

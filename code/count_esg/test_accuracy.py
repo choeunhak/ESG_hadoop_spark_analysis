@@ -17,12 +17,12 @@ def makeTFIDF(df):
 def create_nbmodel(corp):
     training = corp.map(lambda x: LabeledPoint(x[0], x[1]))
     model = NaiveBayes.train(training)
-    model.save(spark,"/user/maria_dev/model/{}".format("accuracytest"))
+    model.save(spark,"/user/maria_dev/model/{}".format("pre_test"))
 
 if __name__ == "__main__":
     spark = SparkSession.builder.appName("test_accuracy").getOrCreate()
 
-    df = spark.read.format("csv").option("header", "true").option("escape","\"").option("encoding", "UTF-8").load("hdfs:///user/maria_dev/data/labeltest.csv")
+    df = spark.read.format("csv").option("header", "true").option("escape","\"").option("encoding", "UTF-8").load("hdfs:///user/maria_dev/data/pre_labeldata.csv")
     #label integer로 형변환
     df = df.withColumn("label", df["label"].cast(IntegerType()))
     df=df.rdd
@@ -34,12 +34,16 @@ if __name__ == "__main__":
 
     tfidf = makeTFIDF(df)
     corp=labels.zip(tfidf)
-    create_nbmodel(corp)
+    # create_nbmodel(corp)
 
     #모델 불러오기
-    saved_model = NaiveBayesModel.load(spark,"/user/maria_dev/model/{}".format("accuracytest"))
+    saved_model = NaiveBayesModel.load(spark,"/user/maria_dev/model/{}".format("pre_test"))#accuracytest였음 원래
 
-    predictionAndLabel = labels.zip(saved_model.predict(tfidf))
+    pred=saved_model.predict(tfidf)
+
+    print(pred.take(50))
+    predictionAndLabel = labels.zip(pred)
+    print(labels.count())
     accuracy = 1.0 * predictionAndLabel.filter(lambda pl: pl[0] == pl[1]).count() / df.count()
     print('model accuracy {}'.format(accuracy))
 
