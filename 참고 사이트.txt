@@ -1,0 +1,34 @@
+
+
+하둡 커맨드
+https://snepbnt.tistory.com/47
+
+
+참조코드
+나이브베이시안+TFIDF
+https://stackoverflow.com/questions/32231049/how-to-use-spark-naive-bayes-classifier-for-text-classification-with-idf
+
+
+하둡파일저장
+https://stackoverflow.com/questions/26606128/how-to-save-a-file-in-hadoop-with-python
+
+
+크롤링 시간차주기
+https://advenoh.tistory.com/3
+
+
+카카오 데이터엔지니어 블로그
+httpsleeyh0216.github.ioabout
+https://leeyh0216.github.io/
+
+wordcount예쩨
+https://parkaparka.tistory.com/17
+
+rdd 널값 제거
+https://stackoverflow.com/questions/41391899/how-to-remove-empty-rows-from-an-pyspark-rdd
+
+https://stackoverflow.com/questions/54915381/will-pip-work-for-python-2-7-after-its-end-of-life-on-1st-jan-2020
+
+
+python 2에서의 io작업
+https://stackoverflow.com/questions/25049962/is-encoding-is-an-invalid-keyword-error-inevitable-in-python-2-x

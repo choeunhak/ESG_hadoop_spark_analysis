@@ -1,0 +1,43 @@
+pip 설치
+
+• SU로 바꾸자
+– su root
+– 처음 비밀번호는 hadoop임. 첫 접속할 때 pwd를 변경함!
+1. PIP: Python 패키지 관리자 설치
+– yum install python-pip
+2. python2 중에 제일 낮은 버전 설치
+pip install --upgrade "pip < 21.0"
+3. numpy 설치
+– sudo pip install numpy
+
+4 ambari 관리자 계정 비밀번호 변경
+ ambari-admin-password-reset
+
+5. . 스파크 에러 수준 디버깅으로 변경
+log4j.rootCategory=INFO, console
+->
+log4j.rootCategory=ERROR, console
+
+후 restart
+
+6. 파이썬 인코딩 utf8로 설정
+export PYTHONIOENCODING=utf8
+
+7. konlpy 설치
+https://konlpy.org/en/latest/install/
+python2 버전, centos로 설치
+
+python2 버전에 맞게
+-pip install JPype1==0.7.0
+-pip install konlpy
+
+
+아래는 기타 참고자료
+• install numpy
+– sudo pip install --trusted-host pypi.python.org --trusted-host files.pythonhosted.org --trusted-host pypi.org numpy
+
+sudo python2.7 get-pip.py
+pip2 install numpy
+
+
+
