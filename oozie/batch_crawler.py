@@ -2,11 +2,9 @@
 import requests
 from bs4 import BeautifulSoup
 import pandas as pd
-from subprocess import PIPE, Popen
 import datetime
-import os
 
-com_list=["kg이니시스", "안랩"]
+com_list=["kg이니시스"]#"kg이니시스", "안랩", "BGF리테일", "씨젠", "셀트리온제약","현대그린푸드", "풀무원", "s-oil","쌍방울","kcc건설"
 day_slist = ["01", "16"]
 day_elist = ["15", "31"]
 
@@ -45,12 +43,7 @@ for com in com_list:
     list_df = pd.DataFrame(info, columns=col_name)
     newlist_df = list_df.drop_duplicates(['summary'], keep = 'first')
     newlist_df = newlist_df[~newlist_df['summary'].isnull()]
-    newlist_df.to_csv(r"./batchdata/{}.csv".format(com_name), header = True, index = False, encoding='utf-8-sig')
+    newlist_df.to_csv(r"./batch/raw_data/raw_{}.csv".format(com_name), header = True, index = False, encoding='utf-8-sig')
 
-    # create path to your username on hdfs
-    hdfs_path = os.path.join(os.sep, 'user', 'maria_dev', "./batchdata/{}.csv".format(com_name))
-
-    # put csv into hdfs
-    put = Popen(["hadoop", "fs", "-put", "./batchdata/{}.csv".format(com_name), hdfs_path], stdin=PIPE, bufsize=-1)
-    put.communicate()
+    print(com+" 크롤링 완료")
 print("크롤링 완료\n")
