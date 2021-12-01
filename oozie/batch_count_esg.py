@@ -20,6 +20,8 @@ def makeTFIDF(df):
     return tfidf
 
 if __name__ == "__main__":
+    corp_dic = {'kg이니시스':'kgini', '안랩':'ahnlab', 'BGF리테일': 'bgf'}
+
     spark_classify = SparkSession.builder.appName("classify_news").getOrCreate()
 
     # 모델 불러오기
@@ -34,12 +36,11 @@ if __name__ == "__main__":
 
     #분류할 데이터 불러오기
     for com in com_list:
-        unClassifiedDf = spark_classify.read.format("csv").option("header", "false").option("escape","\"").option("encoding", "UTF-8").load("hdfs:///user/maria_dev/batch/{}.csv".format(com))
+        unClassifiedDf = spark_classify.read.format("csv").option("header", "false").option("escape","\"").option("encoding", "UTF-8").load("hdfs:///user/maria_dev/batch/{}.csv".format(corp_dic[com]))
         unClassifiedDf = unClassifiedDf.toDF('time','news','title','summary')
 
         #null값제거
         unClassifiedDf = unClassifiedDf.na.drop()
-        print(unClassifiedDf.show(50))
         unClassifiedRdd=unClassifiedDf.rdd
         tfidf = makeTFIDF(unClassifiedRdd)
         pred=saved_model.predict(tfidf)
@@ -55,7 +56,7 @@ if __name__ == "__main__":
 
         #데이터프레임 생성
         columns = ['year', 'month', 'eg', 'eb', 'sg', 'sb', 'gg', 'gb']
-        df = pd.DataFrame(columns=columns)
+        # df = pd.DataFrame(columns=columns)
         year_month=str(year)+str(month)
 
         pos_dateFiltered = posRdd.filter(lambda x:x[0][0]==year_month)
@@ -82,31 +83,14 @@ if __name__ == "__main__":
         gg_size = gg_word.count()
         gb_size = gb_word.count()
 
-        tmp_df = {
-            'year' : year,
-            'month' : month,
-            'eg' : eg_size,
-            'eb' : eb_size,
-            'sg' : sg_size,
-            'sb' : sb_size,
-            'gg' : gg_size,
-            'gb' : gb_size
-        }
-        print(tmp_df)
+        #추가한다
+        columns = ['year','month','eg','eb','sg','sb','gg','gb']
+        tmp_df = spark_classify.createDataFrame([(year,month,eg_size,eb_size,sg_size,sb_size,gg_size,gb_size)], columns)
+        # corp_res.union(tmp_df)
 
-        df = df.append(tmp_df, ignore_index=True)
-        print(df)
-        df.to_csv("res/{}_res.csv".format(com),header=False, index=False)
-
-        # hdfs_path = os.path.join(os.sep, 'user', 'maria_dev', "batch", "{}.csv".format(com))
-
-        # #하둡에서 결과csv파일을 가져온다
-
-        # #저장한다
-        # put = Popen(["hadoop", "fs", "-put", "-f", "./batch/preprocessed_data/{}.csv".format(com), hdfs_path], stdin=PIPE, bufsize=-1)
-        # put.communicate()
+        #하둡에 저장 mode=append가 잘 동작안한다...
+        tmp_df.write.csv("hdfs:///user/maria_dev/batch/res/{}_res.csv".format(corp_dic[com]),mode="append",header=True)
 
     print(year,"년 완료")
-        
 
     spark_classify.stop()

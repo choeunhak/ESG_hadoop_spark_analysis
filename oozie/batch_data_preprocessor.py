@@ -21,6 +21,7 @@ def makeArrToStr(arr):
 
 com_list=["kg이니시스"]#"kg이니시스", "안랩", "BGF리테일", "씨젠", "셀트리온제약","현대그린푸드", "풀무원", "s-oil","쌍방울","kcc건설"
 for com in com_list:
+    corp_dic = {'kg이니시스':'kgini', '안랩':'ahnlab', 'BGF리테일': 'bgf'}
     com_name=com
     f = io.open(r"./batch/raw_data/raw_{}.csv".format(com),'r', encoding='UTF8')#, 
     rdr = csv.reader(f)
