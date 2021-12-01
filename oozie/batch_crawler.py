@@ -4,7 +4,7 @@ from bs4 import BeautifulSoup
 import pandas as pd
 import datetime
 
-com_list=["kg이니시스"]#"kg이니시스", "안랩", "BGF리테일", "씨젠", "셀트리온제약","현대그린푸드", "풀무원", "s-oil","쌍방울","kcc건설"
+com_list=["kg이니시스", "안랩", "BGF리테일", "씨젠", "셀트리온제약","현대그린푸드", "풀무원", "s-oil","쌍방울","kcc건설"]
 day_slist = ["01", "16"]
 day_elist = ["15", "31"]
 
@@ -15,10 +15,10 @@ lastMonth = first - datetime.timedelta(days=1)
 for com in com_list:
     com_name=com
     for day_smem, day_emem in zip(day_slist, day_elist):
-        ds = lastMonth.strftime('%Y') + "." + lastMonth.strftime('%m') + "." + day_smem   # 시작날 형식 입력
-        de = lastMonth.strftime('%Y') + "." + lastMonth.strftime('%m') + "." + day_emem  # 끝날 형식 입력
+        ds = lastMonth.strftime('%Y') + "." + lastMonth.strftime('%m') + "." + day_smem
+        de = lastMonth.strftime('%Y') + "." + lastMonth.strftime('%m') + "." + day_emem
         print(ds + "-" + de)
-        start = -9  # page: 1부터 10씩 증가
+        start = -9
         while (True):
             start = start + 10
             raw = requests.get(

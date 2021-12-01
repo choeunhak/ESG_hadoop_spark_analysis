@@ -1,7 +1,6 @@
 #-*- coding:utf-8 -*-
 from konlpy.tag import Okt
 import csv
-import pandas as pd
 from subprocess import PIPE, Popen
 import os
 import io

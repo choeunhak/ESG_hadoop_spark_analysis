@@ -20,33 +20,30 @@ def create_nbmodel(labels, tfidf):
     corp=labels.zip(tfidf)
     training = corp.map(lambda x: LabeledPoint(x[0], x[1]))
     model = NaiveBayes.train(training)
-    model.save(spark_classify,"/user/maria_dev/model/{}".format("pre_test"))
+    model.save(spark,"/user/maria_dev/model/{}".format("pre_test"))
 
 if __name__ == "__main__":
-    spark_classify = SparkSession.builder.appName("classify_news").getOrCreate()
+    spark = SparkSession.builder.appName("classify_news").getOrCreate()
 
-    df = spark_classify.read.format("csv").option("header", "true").option("escape","\"").option("encoding", "UTF-8").load("hdfs:///user/maria_dev/data/preprocessed_newsdata/pre_labeldata.csv")
+    df = spark.read.format("csv").option("header", "true").option("escape","\"").option("encoding", "UTF-8").load("hdfs:///user/maria_dev/data/preprocessed_newsdata/pre_labeldata.csv")
     #label integer로 형변환
     df = df.withColumn("label", df["label"].cast(IntegerType()))
-    
-    df=df.rdd
+
+    rdd=df.rdd
     #summary none값 제거(전처리)
-    df = df.filter(lambda doc:doc['summary'] is not None)
+    rdd = rdd.filter(lambda doc:doc['summary'] is not None)
     #labels불러오기
-    tfidf = makeTFIDF(df)
-    labels = df.map(lambda doc: doc["label"])
-    print(labels.take(1002))
+    tfidf = makeTFIDF(rdd)
+    labels = rdd.map(lambda doc: doc["label"])
     create_nbmodel(labels, tfidf)
 
     # 모델 불러오기
-    corp_name="ssang"
-    saved_model = NaiveBayesModel.load(spark_classify,"/user/maria_dev/model/{}".format("pre_test"))
+    saved_model = NaiveBayesModel.load(spark,"/user/maria_dev/model/{}".format("pre_test"))
 
     #분류할 데이터 불러오기
-    unClassifiedDf = spark_classify.read.format("csv").option("header", "true").option("escape","\"").option("encoding", "UTF-8").load("hdfs:///user/maria_dev/data/preprocessed_newsdata/pre_{}.csv".format(corp_name))
+    corp_name="ssang"
+    unClassifiedDf = spark.read.format("csv").option("header", "true").option("escape","\"").option("encoding", "UTF-8").load("hdfs:///user/maria_dev/data/preprocessed_newsdata/pre_{}.csv".format(corp_name))
 
-    # unClassifiedDf=unClassifiedDf.filter(unClassifiedDf.time.startswith("2015"))
-    # unClassifiedDf=unClassifiedDf.filter(unClassifiedDf.time.startswith('2021'))
     unClassifiedRdd=unClassifiedDf.rdd
     tfidf = makeTFIDF(unClassifiedRdd)
     pred=saved_model.predict(tfidf)
@@ -64,8 +61,7 @@ if __name__ == "__main__":
     posRdd = classifiedRdd.filter(lambda x:x[1]==1)
     negRdd = classifiedRdd.filter(lambda x:x[1]==0)
     
-    #2017년 1월 추출
-    years=["2020","2021"]#"2015","2016","2017","2018","2019","2020","2021"
+    years=["2015","2016","2017","2018","2019","2020","2021"]
     months=["01","02","03","04","05","06","07","08","09","10","11","12"]
 
     #데이터프레임 생성
@@ -121,4 +117,4 @@ if __name__ == "__main__":
         print(year,"년 완료")
         
 
-    spark_classify.stop()
+    spark.stop()
