@@ -19,49 +19,37 @@ if __name__ == "__main__":
     corp_dic = {'kg이니시스':'kgini', '안랩':'ahnlab', 'BGF리테일': 'bgf','씨젠':'ceegene','셀트리온제약':'celltrion_ph','현대그린푸드':'hyundaegreenfood','kcc건설':'kcc_build','풀무원':'pulmuone','s-oil':'soil','쌍방울':'ssang'}
 
     spark = SparkSession.builder.appName("classify_news").getOrCreate()
-    corp_list=["kg이니시스", "안랩", "BGF리테일", "씨젠", "셀트리온제약","현대그린푸드", "풀무원", "s-oil","쌍방울","kcc건설"]
 
     # 모델 불러오기
+    corp_list=["kg이니시스"]#"kg이니시스", "안랩", "BGF리테일", "씨젠", "셀트리온제약","현대그린푸드", "풀무원", "s-oil","쌍방울","kcc건설"
     saved_model = NaiveBayesModel.load(spark,"/user/maria_dev/model/{}".format("pre_test"))
 
-    #매달 1일 크롤링을 위한 현재날짜로부터 지난 달의 년도와 달의 값을 가져오기
     today = datetime.date.today()
     firstDay = today.replace(day=1)
     lastMonth = firstDay - datetime.timedelta(days=1)
     year = lastMonth.strftime('%Y')
     month = lastMonth.strftime('%m')
 
+    #분류할 데이터 불러오기
     for corp in corp_list:
-        
-        #분류할 데이터 불러오기
         unClassifiedDf = spark.read.format("csv").option("header", "false").option("escape","\"").option("encoding", "UTF-8").load("hdfs:///user/maria_dev/batch/{}.csv".format(corp_dic[corp]))
         unClassifiedDf = unClassifiedDf.toDF('time','news','title','summary')
 
         #null값제거
         unClassifiedDf = unClassifiedDf.na.drop()
-
-        #rdd로 변환
         unClassifiedRdd=unClassifiedDf.rdd
-
-        #TFIDF 생성
         tfidf = makeTFIDF(unClassifiedRdd)
-
-        #모델로 예측
         pred=saved_model.predict(tfidf)
 
-        #모델과 예측 결과 묶기
         classifiedRdd=unClassifiedRdd.zip(pred)
 
-        #esg 단어 불러오기
         e_word=get_e_word()
         s_word=get_s_word()
         g_word=get_g_word()
 
-        #긍부정으로 filtering
         posRdd = classifiedRdd.filter(lambda x:x[1]==1)
         negRdd = classifiedRdd.filter(lambda x:x[1]==0)
 
-        #년과 월 선택
         year_month=str(year)+str(month)
         pos_dateFiltered = posRdd.filter(lambda x:x[0][0]==year_month)
         neg_dateFiltered = negRdd.filter(lambda x:x[0][0]==year_month)
@@ -87,8 +75,8 @@ if __name__ == "__main__":
         gg_size = gg_word.count()
         gb_size = gb_word.count()
 
-        columns = ['corp', 'year','month','eg','eb','sg','sb','gg','gb']
-        tmp_df = spark.createDataFrame([(corp, year,month,eg_size,eb_size,sg_size,sb_size,gg_size,gb_size)], columns)
+        columns = ['year','month','eg','eb','sg','sb','gg','gb']
+        tmp_df = spark.createDataFrame([(year,month,eg_size,eb_size,sg_size,sb_size,gg_size,gb_size)], columns)
 
         #하둡에 저장
         tmp_df.write.csv("hdfs:///user/maria_dev/batch/res/{}_res.csv".format(corp_dic[corp]),mode="append",header=True)

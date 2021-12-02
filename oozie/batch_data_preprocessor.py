@@ -18,11 +18,10 @@ def makeArrToStr(arr):
         tmp=tmp+" "+i
     return tmp
 
-com_list=["kg이니시스"]#"kg이니시스", "안랩", "BGF리테일", "씨젠", "셀트리온제약","현대그린푸드", "풀무원", "s-oil","쌍방울","kcc건설"
-for com in com_list:
-    corp_dic = {'kg이니시스':'kgini', '안랩':'ahnlab', 'BGF리테일': 'bgf'}
-    com_name=com
-    f = io.open(r"./batch/raw_data/raw_{}.csv".format(com),'r', encoding='UTF8')#, 
+corp_list=["kg이니시스", "안랩", "BGF리테일", "씨젠", "셀트리온제약","현대그린푸드", "풀무원", "s-oil","쌍방울","kcc건설"]#
+for corp in corp_list:
+    corp_name=corp
+    f = io.open(r"./batch/raw_data/raw_{}.csv".format(corp),'r', encoding='UTF8')#, 
     rdr = csv.reader(f)
     next(rdr)
     lines = []
@@ -30,14 +29,14 @@ for com in com_list:
         line[3]=makeArrToStr(okt.nouns(line[3]))
         lines.append(line)
     
-    f = io.open(r"./batch/preprocessed_data/{}.csv".format(com),'wb')
+    f = io.open(r"./batch/preprocessed_data/{}.csv".format(corp),'wb')
     wr = csv.writer(f)
     wr.writerows(lines)
-    print(com+"전처리 완료")
+    print(corp+"전처리 완료")
 
-    hdfs_path = os.path.join(os.sep, 'user', 'maria_dev', "batch", "{}.csv".format(com_name))
+    hdfs_path = os.path.join(os.sep, 'user', 'maria_dev', "batch", "{}.csv".format(corp_name))
 
-    put = Popen(["hadoop", "fs", "-put", "-f", "./batch/preprocessed_data/{}.csv".format(com_name), hdfs_path], stdin=PIPE, bufsize=-1)
+    put = Popen(["hadoop", "fs", "-put", "-f", "./batch/preprocessed_data/{}.csv".format(corp_name), hdfs_path], stdin=PIPE, bufsize=-1)
     put.communicate()
  
 f.close()
