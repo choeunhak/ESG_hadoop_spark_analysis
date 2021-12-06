@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<coordinator-app xmlns="uri:oozie:coordinator:0.5" end="2023-02-01T05:13Z" frequency="${coord:months(1)}" name="count_esg_coordinator" start="2021-12-02T05:23Z" timezone="UTC">
+    <action>
+        <workflow>
+            <app-path>/user/maria_dev/oozie/workflow.xml</app-path>
+            <configuration>
+                <property>
+                    <name/>
+                    <value/>
+                </property>
+            </configuration>
+        </workflow>
+    </action>
+</coordinator-app>
