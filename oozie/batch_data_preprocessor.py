@@ -18,7 +18,7 @@ def makeArrToStr(arr):
         tmp=tmp+" "+i
     return tmp
 
-corp_list=["kg이니시스", "안랩", "BGF리테일", "씨젠", "셀트리온제약","현대그린푸드", "풀무원", "s-oil","쌍방울","kcc건설"]#
+corp_list=["안랩"]#, "BGF리테일", "씨젠", "셀트리온제약","현대그린푸드", "풀무원", "s-oil","쌍방울","kcc건설","kg이니시스", 
 for corp in corp_list:
     corp_name=corp
     f = io.open(r"./batch/raw_data/raw_{}.csv".format(corp),'r', encoding='UTF8')#, 

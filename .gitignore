@@ -11,3 +11,5 @@ README.md
 code/crawling/.ipynb_checkpoints/naver_news_crawler_2-checkpoint.ipynb
 code/crawling/.ipynb_checkpoints/naver_news_crawler-checkpoint.ipynb
 final/마지막으로 돌려본코드.py
+docs/
+oozie/tmp_insert.py

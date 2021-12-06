@@ -4,7 +4,7 @@ from bs4 import BeautifulSoup
 import pandas as pd
 import datetime
 
-corp_list=["kg이니시스", "안랩", "BGF리테일", "씨젠", "셀트리온제약","현대그린푸드", "풀무원", "s-oil","쌍방울","kcc건설"]
+corp_list=["안랩"]
 day_slist = ["01", "16"]
 day_elist = ["15", "31"]
 
@@ -41,9 +41,9 @@ for corp in corp_list:
     # 중복제거 후 저장
     col_name = ['time', 'news', 'title', 'summary']
     list_df = pd.DataFrame(info, columns=col_name)
-    newlist_df = list_df.drop_duplicates(['su'], keep = 'first')
+    newlist_df = list_df.drop_duplicates(['summary'], keep = 'first')
     newlist_df = newlist_df[~newlist_df['summary'].isnull()]
-    newlist_df.to_csv(r"/home/maria_dev/batch/raw.csv".format(corp_name), header = True, index = False, encoding='utf-8-sig')
+    newlist_df.to_csv(r"/home/maria_dev/batch/raw_data/raw_{}.csv".format(corp_name), header = True, index = False, encoding='utf-8-sig')
 
     print(corp+" 크롤링 완료")
 print("크롤링 완료\n")

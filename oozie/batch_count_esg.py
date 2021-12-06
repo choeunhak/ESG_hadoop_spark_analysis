@@ -19,7 +19,7 @@ if __name__ == "__main__":
     corp_dic = {'kg이니시스':'kgini', '안랩':'ahnlab', 'BGF리테일': 'bgf','씨젠':'ceegene','셀트리온제약':'celltrion_ph','현대그린푸드':'hyundaegreenfood','kcc건설':'kcc_build','풀무원':'pulmuone','s-oil':'soil','쌍방울':'ssang'}
 
     spark = SparkSession.builder.appName("classify_news").getOrCreate()
-    corp_list=["kg이니시스", "안랩", "BGF리테일", "씨젠", "셀트리온제약","현대그린푸드", "풀무원", "s-oil","쌍방울","kcc건설"]
+    corp_list=["안랩"]#, "BGF리테일", "씨젠", "셀트리온제약","현대그린푸드", "풀무원", "s-oil","쌍방울","kcc건설","kg이니시스", 
 
     # 모델 불러오기
     saved_model = NaiveBayesModel.load(spark,"/user/maria_dev/model/{}".format("pre_test"))
@@ -34,7 +34,7 @@ if __name__ == "__main__":
     for corp in corp_list:
         
         #분류할 데이터 불러오기
-        unClassifiedDf = spark.read.format("csv").option("header", "false").option("escape","\"").option("encoding", "UTF-8").load("hdfs:///user/maria_dev/batch/{}.csv".format(corp_dic[corp]))
+        unClassifiedDf = spark.read.format("csv").option("header", "false").option("escape","\"").option("encoding", "UTF-8").load("hdfs:///user/maria_dev/batch/{}.csv".format(corp))
         unClassifiedDf = unClassifiedDf.toDF('time','news','title','summary')
 
         #null값제거
